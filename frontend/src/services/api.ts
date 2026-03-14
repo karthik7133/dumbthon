@@ -5,7 +5,7 @@ const api = axios.create({
 });
 
 export const faceUnlock = (faceDescriptor: number[]) => api.post('/auth/unlock', { faceDescriptor });
-export const registerFace = (name: string, faceDescriptor: number[]) => api.post('/auth/register', { name, faceDescriptor });
+export const registerFace = (name: string, email: string, phone: string, faceDescriptor: number[]) => api.post('/auth/register', { name, email, phone, faceDescriptor });
 
 export const getItems = () => api.get('/items');
 export const createItem = (itemData: any) => api.post('/items/create', itemData);

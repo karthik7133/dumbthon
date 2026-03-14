@@ -66,22 +66,20 @@ const Signup: React.FC = () => {
         if (detection) {
             try {
                 const descriptor = Array.from(detection.descriptor);
-                const expandRes = await fetch('http://localhost:5000/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ...formData, faceDescriptor: descriptor })
-                });
 
-                const data = await expandRes.json();
-                if (!expandRes.ok) throw new Error(data.msg || 'PROTECTION FAULT');
+                // Using the centralized API service
+                const { registerFace } = await import('../services/api');
+                const expandRes = await registerFace(formData.name, formData.email, formData.phone, descriptor);
 
-                login(data.user, data.token);
+                login(expandRes.data.user, expandRes.data.token);
 
                 const stream = videoRef.current.srcObject as MediaStream;
                 stream?.getTracks().forEach(track => track.stop());
                 navigate('/');
             } catch (err: any) {
-                setError(err.message || 'REGISTRATION REJECTED.');
+                console.error("Registration Error:", err);
+                const errorMsg = err.response?.data?.msg || err.message || 'REGISTRATION REJECTED.';
+                setError(errorMsg);
                 setStatus('ENROLLMENT FAILED');
             }
         } else {

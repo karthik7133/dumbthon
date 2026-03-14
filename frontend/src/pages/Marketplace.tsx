@@ -90,7 +90,7 @@ const Marketplace: React.FC<MarketplaceProps> = ({ user }) => {
     };
 
     return (
-        <div style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', overflow: 'visible' }}>
             <BackgroundParticles />
             {/* Background Blobs */}
             {blobs.map((blob, i) => (
@@ -150,7 +150,8 @@ const Marketplace: React.FC<MarketplaceProps> = ({ user }) => {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 background: 'rgba(255,255,255,0.02)',
-                                border: '1px solid rgba(255,255,255,0.05)'
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                overflow: 'visible' // Ensure buttons can escape visually
                             }}
                         >
                             <div style={{

@@ -17,12 +17,12 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     const funnyMessages = [
-        "WARP SPEED! 🛸",
-        "WHERE DID I GO? 🕵️‍♂️",
+        "COSMIC LEAP! 🌌",
+        "WHERE AM I? 🛸",
         "TOO SLOW! 💨",
-        "CATCH THE GLITCH! 👾",
-        "HUGE LEAP! 🚀",
-        "CHAOS MODE ACTIVE! 🧬"
+        "BEYOND YOUR REACH! 🔒",
+        "QUANTUM JUMP! 🧬",
+        "CATCH ME IN ORBIT! 🛰️"
     ];
 
     useEffect(() => {
@@ -43,7 +43,7 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
         if (!buttonRef.current || isTrapped) return;
 
         const now = Date.now();
-        if (now - lastDodgeTime.current < 100) return; // Chaos-level cooldown: 100ms
+        if (now - lastDodgeTime.current < 50) return; // Cosmic-level cooldown: 50ms
 
         const rect = buttonRef.current.getBoundingClientRect();
         const buttonCenterX = rect.left + rect.width / 2;
@@ -54,22 +54,35 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
             Math.pow(e.clientY - buttonCenterY, 2)
         );
 
-        // Increased reaction distance: 150px
-        if (distance < 150) {
+        // High reaction distance: 180px
+        if (distance < 180) {
             lastDodgeTime.current = now;
-            const angle = Math.atan2(buttonCenterY - e.clientY, buttonCenterX - e.clientX);
 
-            // MASSIVE movement distance: 300-600px
-            const moveDist = 300 + Math.random() * 300;
+            // 8 possible directions
+            const directions = [
+                { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 1, y: 0 },
+                { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 1 }, { x: -1, y: 1 }
+            ];
 
-            let newX = position.x + Math.cos(angle) * moveDist;
-            let newY = position.y + Math.sin(angle) * moveDist;
+            const randomDir = directions[Math.floor(Math.random() * directions.length)];
+            const len = Math.sqrt(randomDir.x * randomDir.x + randomDir.y * randomDir.y);
 
-            // Contain within huge bounds to allow screen-wide jumps
-            const boundVertical = 400;
-            const boundHorizontal = 500;
-            newX = Math.max(-boundHorizontal, Math.min(boundHorizontal, newX));
-            newY = Math.max(-boundVertical, Math.min(boundVertical, newY));
+            // EXACT directional leap of 500px to 650px
+            const moveDist = 500 + Math.random() * 150;
+
+            let newX = position.x + (randomDir.x / len) * moveDist;
+            let newY = position.y + (randomDir.y / len) * moveDist;
+
+            // Contain within bounds (bouncing back if it hits the edge)
+            const boundVertical = 800;
+            const boundHorizontal = 1000;
+
+            if (Math.abs(newX) > boundHorizontal) {
+                newX = Math.max(-boundHorizontal, Math.min(boundHorizontal, position.x - (randomDir.x / len) * moveDist));
+            }
+            if (Math.abs(newY) > boundVertical) {
+                newY = Math.max(-boundVertical, Math.min(boundVertical, position.y - (randomDir.y / len) * moveDist));
+            }
 
             setPosition({ x: newX, y: newY });
             setDodgeCount(prev => prev + 1);
@@ -132,8 +145,8 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
                 }}
                 transition={{
                     type: 'spring',
-                    stiffness: 1000, // Insane stiffness for instant teleport
-                    damping: 25,
+                    stiffness: 1500, // Cosmic stiffness for teleportation
+                    damping: 30,
                     scale: { duration: 0.2 }
                 }}
                 onMouseMove={handleMouseMove}
@@ -141,7 +154,6 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
                     if (isTrapped) {
                         onAdd();
                     } else {
-                        // Incremental dodge count if they somehow manage to click it
                         setDodgeCount(prev => prev + 1);
                     }
                 }}

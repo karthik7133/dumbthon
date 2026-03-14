@@ -38,8 +38,10 @@ exports.registerFace = async (req, res) => {
             return res.status(400).json({ msg: 'Email already registered.' });
         }
 
+        console.log(`Registration attempt for: ${email}`);
         user = new User({ name, email, phone, faceDescriptor });
         await user.save();
+        console.log(`User ${email} successfully registered and saved to DB.`);
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         res.status(201).json({ token, user });
