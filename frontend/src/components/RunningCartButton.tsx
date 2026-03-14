@@ -16,12 +16,12 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     const funnyMessages = [
-        "Wait! Not yet! 😂",
-        "Higher discount ahead? (Just kidding) 🏃‍♂️",
-        "Are you sure? Choose wisely! 🤔",
-        "Hold your horses! 🐎",
-        "Catch me if you can! 💨",
-        "One more try! 😉"
+        "NICE TRY! 😉",
+        "TOO SLOW. 💨",
+        "MISSING OUT? 😂",
+        "NOT FOR YOU. 🔒",
+        "KEEP CHASING. 🏃‍♂️",
+        "ALMOST THERE. ✨"
     ];
 
     useEffect(() => {
@@ -30,7 +30,7 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
             const timer = setTimeout(() => setBannerText(""), 1200);
             return () => clearTimeout(timer);
         } else if (dodgeCount >= targetDodges.current) {
-            setBannerText("Okay, it's yours! 🎁");
+            setBannerText("ACCESS GRANTED! 🔓");
             setIsTrapped(true);
             setPosition({ x: 0, y: 0 });
             const timer = setTimeout(() => setBannerText(""), 2000);
@@ -50,14 +50,15 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
             Math.pow(e.clientY - buttonCenterY, 2)
         );
 
-        if (distance < 100) {
+        if (distance < 90) {
             const angle = Math.atan2(buttonCenterY - e.clientY, buttonCenterX - e.clientX);
-            const moveDist = 80 + Math.random() * 100;
+            const moveDist = 60 + Math.random() * 80;
 
             let newX = position.x + Math.cos(angle) * moveDist;
             let newY = position.y + Math.sin(angle) * moveDist;
 
-            const bound = 150;
+            // Contain within its parent
+            const bound = 120;
             newX = Math.max(-bound, Math.min(bound, newX));
             newY = Math.max(-bound, Math.min(bound, newY));
 
@@ -67,25 +68,28 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
     };
 
     return (
-        <div style={{ position: 'relative', height: '40px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ position: 'relative', height: '50px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <AnimatePresence>
                 {bannerText && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.5 }}
+                        initial={{ opacity: 0, y: 0, scale: 0.5 }}
                         animate={{ opacity: 1, y: -45, scale: 1 }}
                         exit={{ opacity: 0, y: -60, scale: 0.8 }}
                         style={{
                             position: 'absolute',
                             zIndex: 100,
-                            background: 'var(--accent)',
+                            background: 'rgba(255, 140, 0, 0.9)',
+                            backdropFilter: 'blur(5px)',
                             color: 'white',
-                            padding: '6px 12px',
-                            borderRadius: '20px',
-                            fontSize: '12px',
-                            fontWeight: 'bold',
+                            padding: '8px 16px',
+                            borderRadius: '12px',
+                            fontSize: '11px',
+                            fontWeight: '800',
                             whiteSpace: 'nowrap',
-                            boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-                            pointerEvents: 'none'
+                            boxShadow: '0 10px 20px rgba(0,0,0,0.3)',
+                            pointerEvents: 'none',
+                            letterSpacing: '1px',
+                            border: '1px solid rgba(255,255,255,0.2)'
                         }}
                     >
                         {bannerText}
@@ -95,37 +99,49 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
 
             <motion.button
                 ref={buttonRef}
-                className="btn-primary"
+                className={isTrapped ? "btn-secondary" : "btn-primary"}
                 style={{
                     position: 'absolute',
                     width: '100%',
+                    height: '100%',
                     zIndex: isTrapped ? 1 : 10,
-                    borderRadius: '20px',
-                    borderColor: '#a88734',
-                    background: isTrapped ? 'linear-gradient(to bottom, #f7dfa1, #f0c14b)' : 'linear-gradient(to bottom, #f7dfa1, #e38800)'
+                    textTransform: 'uppercase',
+                    fontSize: '13px',
+                    letterSpacing: '1px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
                 }}
                 animate={{
                     x: position.x,
                     y: position.y,
-                    scale: isTrapped ? [1, 1.1, 1] : 1
+                    scale: isTrapped ? [1, 1.05, 1] : 1,
+                    borderColor: isTrapped ? '#00ff00' : 'rgba(255,255,255,0.1)'
                 }}
                 transition={{
                     type: 'spring',
-                    stiffness: 500,
-                    damping: 30,
-                    scale: { duration: 0.3 }
+                    stiffness: 600,
+                    damping: 35,
+                    scale: { duration: 0.2 }
                 }}
                 onMouseMove={handleMouseMove}
                 onClick={(e) => {
                     if (isTrapped) {
                         onAdd();
                     } else {
-                        // If they somehow click it before dodge (unlikely with movement but possible)
                         setDodgeCount(prev => prev + 1);
                     }
                 }}
             >
-                {isTrapped ? "✅ Added to Cart" : "Add to Cart"}
+                {isTrapped ? (
+                    <>
+                        <span style={{ fontSize: '18px' }}>✨</span>
+                        ACQUIRE NOW
+                    </>
+                ) : (
+                    "ADD TO SELECTION"
+                )}
             </motion.button>
         </div>
     );

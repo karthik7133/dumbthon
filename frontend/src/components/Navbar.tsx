@@ -15,72 +15,117 @@ const Navbar: React.FC = () => {
     };
 
     return (
-        <nav className="navbar">
-            <div className="container" style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '20px' }}>
+        <nav className="glass" style={{
+            height: '80px',
+            position: 'sticky',
+            top: '20px',
+            margin: '0 20px',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 30px',
+            marginTop: '20px'
+        }}>
+            <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '40px' }}>
                 {/* Logo */}
-                <Link to="/" className="nav-logo" style={{ flexShrink: 0 }}>
-                    Shopkart
+                <Link to="/" className="text-gradient" style={{
+                    fontSize: '28px',
+                    fontWeight: '800',
+                    textDecoration: 'none',
+                    letterSpacing: '-1.5px'
+                }}>
+                    SHOPKART
                 </Link>
 
-                {/* Search */}
-                <div className="nav-search">
-                    <select style={{ background: '#f3f3f3', border: 'none', borderRight: '1px solid #ddd', padding: '0 10px', fontSize: '12px', cursor: 'pointer' }}>
-                        <option>All Departments</option>
-                    </select>
-                    <input type="text" placeholder="Search for products, brands and more" />
-                    <button>
+                {/* Search Bar - Modern Redesign */}
+                <div style={{
+                    flex: 1,
+                    display: 'flex',
+                    background: 'rgba(255,255,255,0.03)',
+                    borderRadius: '12px',
+                    padding: '5px',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    transition: 'var(--transition)'
+                }} className="search-focus">
+                    <input
+                        type="text"
+                        placeholder="Search for perfection..."
+                        style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'white',
+                            padding: '10px 15px',
+                            fontSize: '15px',
+                            flex: 1,
+                            outline: 'none'
+                        }}
+                    />
+                    <button style={{
+                        background: 'linear-gradient(45deg, #FF8C00, #FFA500)',
+                        border: 'none',
+                        borderRadius: '8px',
+                        width: '45px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 10px rgba(255, 140, 0, 0.3)'
+                    }}>
                         <span style={{ fontSize: '18px' }}>🔍</span>
                     </button>
                 </div>
 
-                {/* Right Items */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', height: '100%' }}>
-
-                    {/* User Account */}
-                    <div className="nav-item" style={{ color: 'white', padding: '8px 10px', borderRadius: '4px', cursor: 'pointer' }}>
+                {/* Nav Links */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
+                    <div style={{ position: 'relative' }}>
                         {user ? (
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ fontSize: '12px', color: '#ccc' }}>Hello, {user.name}</span>
-                                <span style={{ fontSize: '14px', fontWeight: 'bold' }} onClick={handleLogout}>Account & Logout</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }} onClick={handleLogout}>
+                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>WELCOME,</span>
+                                <span style={{ fontSize: '14px', fontWeight: '700' }}>{user.name.toUpperCase()}</span>
                             </div>
                         ) : (
-                            <Link to="/login" style={{ textDecoration: 'none', color: 'white', display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ fontSize: '12px', color: '#ccc' }}>Hello, sign in</span>
-                                <span style={{ fontSize: '14px', fontWeight: 'bold' }}>Account & Lists</span>
+                            <Link to="/login" style={{ textDecoration: 'none', color: 'white' }}>
+                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>GUEST,</span>
+                                <span style={{ fontSize: '14px', fontWeight: '700', display: 'block' }}>SIGN IN</span>
                             </Link>
                         )}
                     </div>
 
-                    {/* Orders */}
-                    <div className="nav-item" style={{ color: 'white', padding: '8px 10px', borderRadius: '4px', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '12px', color: '#ccc' }}>Returns</span>
-                        <span style={{ fontSize: '14px', fontWeight: 'bold' }}>& Orders</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>HISTORY,</span>
+                        <span style={{ fontSize: '14px', fontWeight: '700' }}>ORDERS</span>
                     </div>
 
-                    {/* Cart */}
-                    <Link to="/cart" className="nav-item" style={{ textDecoration: 'none', color: 'white', padding: '8px 10px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <div style={{ position: 'relative' }}>
-                            <span style={{ fontSize: '24px' }}>🛒</span>
+                    {/* Cart with Glow */}
+                    <Link to="/cart" style={{ textDecoration: 'none', color: 'white', position: 'relative' }}>
+                        <div style={{
+                            background: 'rgba(255,255,255,0.05)',
+                            padding: '10px 15px',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            border: '1px solid rgba(255,255,255,0.1)'
+                        }}>
+                            <span style={{ fontSize: '20px' }}>🛒</span>
                             <motion.span
                                 key={cartCount}
-                                initial={{ scale: 1.5, color: '#ff9900' }}
-                                animate={{ scale: 1, color: '#f08804' }}
-                                style={{
-                                    position: 'absolute', top: '-8px', left: '10px',
-                                    fontWeight: 'bold', fontSize: '15px'
-                                }}
+                                initial={{ scale: 1.5, color: '#FFD700' }}
+                                animate={{ scale: 1, color: '#fff' }}
+                                style={{ fontWeight: '800', fontSize: '16px' }}
                             >
                                 {cartCount}
                             </motion.span>
                         </div>
-                        <span style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '10px' }}>Cart</span>
                     </Link>
                 </div>
             </div>
 
             <style>{`
-                .nav-item:hover { outline: 1px solid white; }
-                .nav-search button:hover { background: #f3a847; }
+                .search-focus:focus-within { 
+                    box-shadow: 0 0 0 3px var(--primary-glow);
+                    border-color: var(--primary);
+                }
             `}</style>
         </nav>
     );

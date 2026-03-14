@@ -8,7 +8,7 @@ const Signup: React.FC = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
-    const [status, setStatus] = useState('Initializing Scanner...');
+    const [status, setStatus] = useState('IDLE');
     const [error, setError] = useState('');
     const [modelsLoaded, setModelsLoaded] = useState(false);
 
@@ -26,7 +26,7 @@ const Signup: React.FC = () => {
                 ]);
                 setModelsLoaded(true);
             } catch (err) {
-                setError('Biometric sensors unavailable.');
+                setError('CORE MODULES UNAVAILABLE.');
             }
         };
         loadModels();
@@ -37,15 +37,15 @@ const Signup: React.FC = () => {
             .then(stream => {
                 if (videoRef.current) {
                     videoRef.current.srcObject = stream;
-                    setStatus('Ready for Face Enrollment');
+                    setStatus('ENROLLMENT READY');
                 }
             })
-            .catch(() => setStatus('Camera access denied.'));
+            .catch(() => setStatus('HARDWARE DISCONNECTED'));
     };
 
     const handleNextStep = () => {
         if (!formData.name || !formData.email) {
-            setError('Please fill in your name and email correctly.');
+            setError('VALID IDENTIFIERS REQUIRED.');
             return;
         }
         setError('');
@@ -55,7 +55,7 @@ const Signup: React.FC = () => {
 
     const handleRegister = async () => {
         if (!videoRef.current) return;
-        setStatus('Analyzing Curated Biometrics...');
+        setStatus('ENCODING BIOMETRICS...');
         setError('');
 
         const detection = await faceapi.detectSingleFace(
@@ -73,7 +73,7 @@ const Signup: React.FC = () => {
                 });
 
                 const data = await expandRes.json();
-                if (!expandRes.ok) throw new Error(data.msg || 'Enrollment failed');
+                if (!expandRes.ok) throw new Error(data.msg || 'PROTECTION FAULT');
 
                 login(data.user, data.token);
 
@@ -81,31 +81,66 @@ const Signup: React.FC = () => {
                 stream?.getTracks().forEach(track => track.stop());
                 navigate('/');
             } catch (err: any) {
-                setError(err.message || 'Face enrollment failed. Please try again.');
-                setStatus('Ready for Face Enrollment');
+                setError(err.message || 'REGISTRATION REJECTED.');
+                setStatus('ENROLLMENT FAILED');
             }
         } else {
-            setError('No face detected. Look directly at the camera and ensure good lighting.');
-            setStatus('Failure: No Face Detected');
+            setError('SUBJECT LOST. ALIGN FACE TO GRID.');
+            setStatus('NO LOCK');
         }
     };
 
-    const labelStyle = { display: 'block', fontWeight: 'bold', fontSize: '13px', marginBottom: '5px' };
-    const inputStyle = { width: '100%', padding: '10px', border: '1px solid #d5d9d9', borderRadius: '4px', marginBottom: '15px', fontSize: '14px' };
+    const inputStyle = {
+        width: '100%',
+        padding: '15px',
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: '12px',
+        marginBottom: '20px',
+        color: 'white',
+        fontSize: '15px',
+        outline: 'none',
+        transition: 'var(--transition)'
+    };
 
     return (
-        <div className="auth-container">
+        <div className="auth-container" style={{ minHeight: '80vh', position: 'relative' }}>
+            {/* Background Accent */}
+            <div style={{
+                position: 'absolute', width: '300px', height: '300px', background: 'var(--primary-glow)',
+                filter: 'blur(100px)', borderRadius: '50%', zIndex: -1, top: '20%', right: '30%'
+            }} />
+
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card auth-card"
+                className="glass"
+                style={{ width: '100%', maxWidth: '500px', padding: '50px' }}
             >
-                <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '25px' }}>Create account</h1>
+                <header style={{ marginBottom: '40px', textAlign: 'center' }}>
+                    <div style={{
+                        fontSize: '11px', fontWeight: '800', color: 'var(--primary)',
+                        letterSpacing: '3px', marginBottom: '10px'
+                    }}>
+                        IDENTITY ENROLLMENT v3.0
+                    </div>
+                    <h1 style={{ fontSize: '32px', fontWeight: '800', letterSpacing: '-1px' }}>
+                        CREATE LOGON
+                    </h1>
+                </header>
 
                 {error && (
-                    <div style={{ color: '#c40000', fontSize: '13px', padding: '12px', background: '#fdf2f2', border: '1px solid #c40000', borderRadius: '4px', marginBottom: '20px' }}>
-                        <strong>⚠ Error</strong><br />{error}
-                    </div>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        style={{
+                            color: '#ff4d4d', fontSize: '11px', fontWeight: '800', padding: '15px',
+                            background: 'rgba(255, 77, 77, 0.1)', border: '1px solid rgba(255, 77, 77, 0.2)',
+                            borderRadius: '12px', marginBottom: '25px', textAlign: 'center', letterSpacing: '1px'
+                        }}
+                    >
+                        {error}
+                    </motion.div>
                 )}
 
                 <AnimatePresence mode="wait">
@@ -116,21 +151,23 @@ const Signup: React.FC = () => {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
                         >
-                            <label style={labelStyle}>Your name</label>
-                            <input type="text" placeholder="First and last name" style={inputStyle} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                            <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>NAME</label>
+                            <input type="text" placeholder="SUBJECT DESIGNATION" style={inputStyle} className="premium-input" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
 
-                            <label style={labelStyle}>Mobile number (optional)</label>
-                            <input type="tel" style={inputStyle} value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+                            <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>CONTACT</label>
+                            <input type="tel" placeholder="+1 (000) 000-0000" style={inputStyle} className="premium-input" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
 
-                            <label style={labelStyle}>Email</label>
-                            <input type="email" style={inputStyle} value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                            <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL</label>
+                            <input type="email" placeholder="ACCESS_ID@SHOPKART.DOM" style={inputStyle} className="premium-input" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
 
-                            <button className="btn-primary" style={{ width: '100%', padding: '12px', fontSize: '16px', marginTop: '10px' }} onClick={handleNextStep}>
-                                Continue to Biometric Setup
+                            <button className="btn-primary" style={{ width: '100%', height: '60px', marginTop: '10px' }} onClick={handleNextStep}>
+                                INITIALIZE BIOMETRIC LINK
                             </button>
 
-                            <div style={{ marginTop: '20px', fontSize: '13px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
-                                Already have an account? <Link to="/login" style={{ color: '#007185', textDecoration: 'none', fontWeight: '600' }}>Sign-in →</Link>
+                            <div style={{ marginTop: '30px', textAlign: 'center' }}>
+                                <Link to="/login" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '12px', fontWeight: '700', letterSpacing: '0.5px' }}>
+                                    RETURN TO AUTHENTICATE →
+                                </Link>
                             </div>
                         </motion.div>
                     ) : (
@@ -140,38 +177,60 @@ const Signup: React.FC = () => {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                         >
-                            <p style={{ fontSize: '14px', marginBottom: '20px', color: '#555' }}>Final Step: Secure your account with **FaceID** for <strong>{formData.email}</strong></p>
-
                             <div style={{
-                                position: 'relative', width: '100%', borderRadius: '12px', overflow: 'hidden',
-                                backgroundColor: '#111', border: '4px solid #fff', boxShadow: '0 0 0 1px #ddd',
-                                marginBottom: '20px'
+                                position: 'relative', width: '100%', borderRadius: '24px', overflow: 'hidden',
+                                border: '1px solid rgba(255,255,255,0.1)', background: '#000',
+                                aspectRatio: '4/3', marginBottom: '30px', boxShadow: '0 0 40px rgba(0,0,0,0.5)'
                             }}>
                                 {!modelsLoaded ? (
-                                    <div style={{ padding: '60px 0', textAlign: 'center', color: '#999' }}>Warming up biometric scanner...</div>
+                                    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>
+                                        SYNCING CORES...
+                                    </div>
                                 ) : (
-                                    <video ref={videoRef} autoPlay muted style={{ width: '100%', display: 'block', transform: 'scaleX(-1)' }} />
+                                    <video ref={videoRef} autoPlay muted style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} />
                                 )}
+
+                                {/* Grid HUD */}
                                 <div style={{
-                                    position: 'absolute', bottom: '0', left: '0', right: '0',
-                                    padding: '10px', background: 'rgba(0,0,0,0.6)', color: 'white',
-                                    textAlign: 'center', fontSize: '12px'
+                                    position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: '1fr 1fr 1fr',
+                                    border: '1px solid rgba(255,255,255,0.05)', pointerEvents: 'none'
                                 }}>
-                                    {status}
+                                    {[...Array(9)].map((_, i) => <div key={i} style={{ border: '1px solid rgba(255,255,255,0.05)' }} />)}
+                                </div>
+
+                                <div style={{
+                                    position: 'absolute', bottom: '15px', left: '20px',
+                                    display: 'flex', alignItems: 'center', gap: '8px'
+                                }}>
+                                    <div style={{
+                                        width: '8px', height: '8px', borderRadius: '50%',
+                                        background: '#00ff00', boxShadow: '0 0 10px #00ff00'
+                                    }} />
+                                    <span style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1.5px', color: 'white' }}>
+                                        {status}
+                                    </span>
                                 </div>
                             </div>
 
-                            <button className="btn-primary" onClick={handleRegister} style={{ width: '100%', padding: '12px', fontSize: '16px' }} disabled={!modelsLoaded}>
-                                Capture & Link Account
+                            <button className="btn-primary" onClick={handleRegister} style={{ width: '100%', height: '60px' }} disabled={!modelsLoaded}>
+                                ENROLL BIOMETRICS
                             </button>
 
-                            <button className="btn-secondary" onClick={() => setStep(1)} style={{ width: '100%', marginTop: '10px' }}>
-                                Back to details
+                            <button className="btn-secondary" onClick={() => setStep(1)} style={{ width: '100%', marginTop: '15px' }}>
+                                EDIT IDENTITIES
                             </button>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </motion.div>
+
+            <style>{`
+                .premium-input:focus { 
+                    background: rgba(255,255,255,0.06); 
+                    border-color: var(--primary);
+                    box-shadow: 0 0 15px var(--primary-glow);
+                }
+            `}</style>
         </div>
     );
 };

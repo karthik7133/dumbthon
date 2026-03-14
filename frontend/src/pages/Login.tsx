@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 
 const Login: React.FC = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [status, setStatus] = useState('Initializing Login System...');
+    const [status, setStatus] = useState('SYSTEM READY');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -23,10 +23,9 @@ const Login: React.FC = () => {
                     faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
                 ]);
                 setLoading(false);
-                setStatus('Ready for Identity Check');
                 startVideo();
             } catch (err) {
-                setStatus('Security Modules Unavailable.');
+                setStatus('HARDWARE FAILURE');
             }
         };
         loadModels();
@@ -39,12 +38,12 @@ const Login: React.FC = () => {
                     videoRef.current.srcObject = stream;
                 }
             })
-            .catch(() => setStatus('Camera access denied.'));
+            .catch(() => setStatus('CAMERA ERROR'));
     };
 
     const handleScan = async () => {
         if (!videoRef.current) return;
-        setStatus('Verifying Face Details...');
+        setStatus('SCANNING...');
         setError('');
 
         const detection = await faceapi.detectSingleFace(
@@ -62,70 +61,118 @@ const Login: React.FC = () => {
                 stream?.getTracks().forEach(track => track.stop());
                 navigate('/');
             } catch (err: any) {
-                setError('Face profile match failed. Please try again or create an account.');
-                setStatus('Identity Check Failed');
+                setError('ID MISMATCH. ACCESS DENIED.');
+                setStatus('MATCH FAILED');
             }
         } else {
-            setError('Position your face clearly within the camera view.');
-            setStatus('No Face Detected');
+            setError('SUBJECT NOT FOUND. ENSURE CLEAR VIEW.');
+            setStatus('NO SIGNAL');
         }
     };
 
     return (
-        <div className="auth-container">
+        <div className="auth-container" style={{ minHeight: '80vh', position: 'relative' }}>
+            {/* Background Accent */}
+            <div style={{
+                position: 'absolute', width: '300px', height: '300px', background: 'var(--primary-glow)',
+                filter: 'blur(100px)', borderRadius: '50%', zIndex: -1, top: '20%', left: '30%'
+            }} />
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="card auth-card"
+                className="glass"
+                style={{ width: '100%', maxWidth: '480px', padding: '50px' }}
             >
-                <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '20px' }}>Sign-in</h1>
+                <header style={{ marginBottom: '40px', textAlign: 'center' }}>
+                    <div style={{
+                        fontSize: '12px', fontWeight: '800', color: 'var(--primary)',
+                        letterSpacing: '3px', marginBottom: '10px'
+                    }}>
+                        SECURE LOGON SYSTEM v3.0
+                    </div>
+                    <h1 style={{ fontSize: '32px', fontWeight: '800', letterSpacing: '-1px' }}>
+                        AUTHENTICATE
+                    </h1>
+                </header>
 
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                    <div style={{ textAlign: 'center', padding: '60px 0' }}>
                         <motion.div
                             animate={{ rotate: 360 }}
-                            transition={{ repeat: Infinity, duration: 1 }}
-                            style={{ width: '30px', height: '30px', border: '3px solid #ddd', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto 15px' }}
+                            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                            style={{
+                                width: '40px', height: '40px', border: '2px solid rgba(255,255,255,0.1)',
+                                borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto 20px'
+                            }}
                         />
-                        <div style={{ color: '#666' }}>{status}</div>
+                        <div style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '2px', color: 'var(--text-muted)' }}>
+                            INITIALIZING...
+                        </div>
                     </div>
                 ) : (
                     <>
                         <div style={{
-                            position: 'relative', width: '100%', borderRadius: '12px', overflow: 'hidden',
-                            backgroundColor: '#111', border: '4px solid #fff', boxShadow: '0 0 0 1px #ddd',
-                            marginBottom: '20px'
+                            position: 'relative', width: '100%', borderRadius: '24px', overflow: 'hidden',
+                            border: '1px solid rgba(255,255,255,0.1)', background: '#000',
+                            aspectRatio: '4/3', marginBottom: '30px', boxShadow: '0 0 40px rgba(0,0,0,0.5)'
                         }}>
-                            <video ref={videoRef} autoPlay muted style={{ width: '100%', display: 'block', transform: 'scaleX(-1)' }} />
+                            <video ref={videoRef} autoPlay muted style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} />
+
+                            {/* Scanning HUD */}
+                            <motion.div
+                                animate={{ top: ['0%', '98%', '0%'] }}
+                                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                                style={{
+                                    position: 'absolute', left: 0, right: 0, height: '2px',
+                                    background: 'linear-gradient(to right, transparent, var(--primary), transparent)',
+                                    boxShadow: '0 0 15px var(--primary)', zIndex: 5
+                                }}
+                            />
+
                             <div style={{
-                                position: 'absolute', bottom: '0', left: '0', right: '0',
-                                padding: '10px', background: 'rgba(0,0,0,0.6)', color: 'white',
-                                textAlign: 'center', fontSize: '13px'
+                                position: 'absolute', bottom: '15px', left: '20px',
+                                display: 'flex', alignItems: 'center', gap: '8px'
                             }}>
-                                {status}
+                                <div style={{
+                                    width: '8px', height: '8px', borderRadius: '50%',
+                                    background: status.includes('ERROR') || status.includes('FAILED') ? '#ff4d4d' : '#00ff00',
+                                    boxShadow: `0 0 10px ${status.includes('ERROR') || status.includes('FAILED') ? '#ff4d4d' : '#00ff00'}`
+                                }} />
+                                <span style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1.5px', color: 'white' }}>
+                                    {status}
+                                </span>
                             </div>
                         </div>
 
                         {error && (
-                            <div style={{ color: '#c40000', fontSize: '13px', padding: '12px', background: '#fdf2f2', border: '1px solid #c40000', borderRadius: '4px', marginBottom: '15px' }}>
-                                <strong>Important!</strong> {error}
-                            </div>
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                style={{
+                                    color: '#ff4d4d', fontSize: '11px', fontWeight: '700', padding: '15px',
+                                    background: 'rgba(255, 77, 77, 0.1)', border: '1px solid rgba(255, 77, 77, 0.2)',
+                                    borderRadius: '12px', marginBottom: '25px', textAlign: 'center', letterSpacing: '0.5px'
+                                }}
+                            >
+                                {error}
+                            </motion.div>
                         )}
 
-                        <button className="btn-primary" onClick={handleScan} style={{ width: '100%', padding: '12px', fontSize: '16px' }}>
-                            Verify Identity
+                        <button className="btn-primary" onClick={handleScan} style={{ width: '100%', height: '60px' }}>
+                            RUN BIOMETRIC SCAN
                         </button>
                     </>
                 )}
 
-                <div style={{ fontSize: '12px', marginTop: '15px', color: '#555', lineHeight: '1.5' }}>
-                    By continuing, you agree to Shopkart's Conditions of Use and Privacy Notice. We use encrypted face data for secure authentication.
-                </div>
-
-                <div style={{ marginTop: '25px', borderTop: '1px solid #ddd', paddingTop: '20px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '12px', color: '#767676', marginBottom: '10px' }}>New to Shopkart?</div>
+                <div style={{ marginTop: '40px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '15px', fontWeight: '500' }}>
+                        NEW SUBJECT?
+                    </div>
                     <Link to="/signup" style={{ textDecoration: 'none' }}>
-                        <button className="btn-secondary" style={{ width: '100%', padding: '10px' }}>Create your Shopkart account</button>
+                        <button className="btn-secondary" style={{ width: '100%', fontSize: '13px', letterSpacing: '1px', fontWeight: '800' }}>
+                            ENROLL NEW IDENTITY
+                        </button>
                     </Link>
                 </div>
             </motion.div>

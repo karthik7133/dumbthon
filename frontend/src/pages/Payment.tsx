@@ -8,77 +8,78 @@ const Payment: React.FC = () => {
 
     const handlePayment = () => {
         setIsProcessing(true);
-        // Fake processing time
         setTimeout(() => {
             navigate('/success');
-        }, 2500);
+        }, 2800);
     };
 
     return (
-        <div className="container" style={{ maxWidth: '800px', padding: '40px 0' }}>
+        <div className="container" style={{ maxWidth: '800px', padding: '60px 0' }}>
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="card"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass"
+                style={{ padding: '60px' }}
             >
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', alignItems: 'center' }}>
-                    <div style={{ color: '#007600' }}>✔ Address</div>
-                    <div style={{ width: '100px', height: '1px', background: '#007600' }}></div>
-                    <div style={{ color: '#c45500', fontWeight: 'bold' }}>2. Payment</div>
-                    <div style={{ width: '100px', height: '1px', background: '#ddd' }}></div>
-                    <div style={{ color: '#555' }}>3. Review</div>
+                {/* Modern Progress Bar */}
+                <div style={{ display: 'flex', gap: '15px', marginBottom: '50px', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ color: '#00ff00', fontWeight: '800', fontSize: '11px', letterSpacing: '2px' }}>✓ ADDRESS</div>
+                    <div style={{ width: '40px', height: '1px', background: 'rgba(0,255,0,0.3)' }}></div>
+                    <div style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '11px', letterSpacing: '2px' }}>PAYMENT</div>
+                    <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                    <div style={{ color: 'var(--text-muted)', fontWeight: '800', fontSize: '11px', letterSpacing: '2px' }}>REVIEW</div>
                 </div>
 
-                <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Selection a payment method</h1>
+                <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '35px', letterSpacing: '-1px' }}>SELECT <span className="text-gradient">METHOD.</span></h1>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ border: '1px solid #d5d9d9', borderRadius: '8px', padding: '15px', display: 'flex', gap: '15px', background: '#fcfcfc' }}>
-                        <input type="radio" name="payment" defaultChecked />
-                        <div>
-                            <div style={{ fontWeight: 'bold' }}>Credit or Debit Card</div>
-                            <div style={{ fontSize: '13px', color: '#555' }}>We accept all major cards</div>
-                            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                                <input placeholder="Card Number" style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', flex: 2 }} />
-                                <input placeholder="CVV" style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', flex: 1 }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    {[
+                        { id: 'card', title: 'CREDIT / DEBIT CARD', desc: 'INSTANT PROCESSING', active: true },
+                        { id: 'net', title: 'NET BANKING', desc: 'SECURE PORTAL REDIRECT' },
+                        { id: 'upi', title: 'UPI / DIGITAL WALLET', desc: 'SCAN & PAY' },
+                        { id: 'cod', title: 'CASH ON DELIVERY', desc: 'PHYSICAL EXCHANGE' }
+                    ].map((m) => (
+                        <div key={m.id} style={{
+                            background: 'rgba(255,255,255,0.03)',
+                            border: `1px solid ${m.active ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}`,
+                            borderRadius: '16px', padding: '20px',
+                            display: 'flex', gap: '20px', alignItems: 'center',
+                            cursor: 'pointer', transition: 'var(--transition)'
+                        }}>
+                            <input type="radio" name="payment" defaultChecked={m.active} style={{ accentColor: 'var(--primary)', width: '20px', height: '20px' }} />
+                            <div>
+                                <div style={{ fontSize: '14px', fontWeight: '800', letterSpacing: '1px' }}>{m.title}</div>
+                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600', marginTop: '4px' }}>{m.desc}</div>
+                                {m.active && (
+                                    <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                                        <input placeholder="CARD NUMBER" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '8px', color: 'white', flex: 2, fontSize: '12px' }} />
+                                        <input placeholder="CVV" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '8px', color: 'white', flex: 1, fontSize: '12px' }} />
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    </div>
-
-                    <div style={{ border: '1px solid #d5d9d9', borderRadius: '8px', padding: '15px', display: 'flex', gap: '15px' }}>
-                        <input type="radio" name="payment" />
-                        <div>
-                            <div style={{ fontWeight: 'bold' }}>Net Banking</div>
-                        </div>
-                    </div>
-
-                    <div style={{ border: '1px solid #d5d9d9', borderRadius: '8px', padding: '15px', display: 'flex', gap: '15px' }}>
-                        <input type="radio" name="payment" />
-                        <div>
-                            <div style={{ fontWeight: 'bold' }}>UPI / Google Pay / PhonePe</div>
-                        </div>
-                    </div>
-
-                    <div style={{ border: '1px solid #d5d9d9', borderRadius: '8px', padding: '15px', display: 'flex', gap: '15px' }}>
-                        <input type="radio" name="payment" />
-                        <div>
-                            <div style={{ fontWeight: 'bold' }}>Cash on Delivery</div>
-                        </div>
-                    </div>
+                    ))}
                 </div>
 
                 {isProcessing ? (
-                    <div style={{ textAlign: 'center', marginTop: '30px' }}>
+                    <div style={{ textAlign: 'center', marginTop: '40px' }}>
                         <motion.div
-                            animate={{ rotate: 360 }}
+                            animate={{ rotate: 360, scale: [1, 1.1, 1] }}
                             transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                            style={{ width: '40px', height: '40px', border: '4px solid #ddd', borderTopColor: '#e47911', borderRadius: '50%', margin: '0 auto 15px' }}
+                            style={{
+                                width: '50px', height: '50px',
+                                border: '3px solid rgba(255,255,255,0.05)',
+                                borderTopColor: 'var(--primary)',
+                                borderRadius: '50%', margin: '0 auto 20px',
+                                boxShadow: '0 0 20px var(--primary-glow)'
+                            }}
                         />
-                        <div style={{ fontWeight: 'bold', color: '#e47911' }}>Processing Secure Payment...</div>
-                        <div style={{ fontSize: '12px', color: '#555' }}>Please do not refresh or go back</div>
+                        <div style={{ fontWeight: '800', color: 'var(--primary)', fontSize: '12px', letterSpacing: '2px' }}>AUTHORIZING TRANSACTION...</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '8px' }}>DO NOT TERMINATE SESSION</div>
                     </div>
                 ) : (
-                    <button onClick={handlePayment} className="btn-primary" style={{ marginTop: '30px', padding: '12px', width: '100%' }}>
-                        Pay and Finish Order
+                    <button onClick={handlePayment} className="btn-primary" style={{ marginTop: '40px', height: '55px', width: '100%' }}>
+                        FINALIZE & PAY
                     </button>
                 )}
             </motion.div>

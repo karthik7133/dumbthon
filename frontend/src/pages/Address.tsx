@@ -16,66 +16,71 @@ const Address: React.FC = () => {
 
     const handleContinue = (e: React.FormEvent) => {
         e.preventDefault();
-        // Just proceed to payment
         navigate('/payment');
     };
 
+    const inputStyle = {
+        width: '100%', padding: '15px', background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
+        marginBottom: '20px', color: 'white', outline: 'none'
+    };
+
     return (
-        <div className="container" style={{ maxWidth: '800px', padding: '40px 0' }}>
+        <div className="container" style={{ maxWidth: '800px', padding: '60px 0' }}>
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="card"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="glass"
+                style={{ padding: '60px' }}
             >
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', alignItems: 'center' }}>
-                    <div style={{ color: '#c45500', fontWeight: 'bold' }}>1. Address</div>
-                    <div style={{ width: '100px', height: '1px', background: '#ddd' }}></div>
-                    <div style={{ color: '#555' }}>2. Payment</div>
-                    <div style={{ width: '100px', height: '1px', background: '#ddd' }}></div>
-                    <div style={{ color: '#555' }}>3. Review</div>
+                {/* Modern Progress Bar */}
+                <div style={{ display: 'flex', gap: '15px', marginBottom: '50px', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '11px', letterSpacing: '2px' }}>ADDRESS</div>
+                    <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                    <div style={{ color: 'var(--text-muted)', fontWeight: '800', fontSize: '11px', letterSpacing: '2px' }}>PAYMENT</div>
+                    <div style={{ width: '40px', height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                    <div style={{ color: 'var(--text-muted)', fontWeight: '800', fontSize: '11px', letterSpacing: '2px' }}>REVIEW</div>
                 </div>
 
-                <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Select a delivery address</h1>
+                <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '30px', letterSpacing: '-1px' }}>SHIPPING <span className="text-gradient">DESTINATION.</span></h1>
 
-                <form onSubmit={handleContinue} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    <div>
-                        <label style={{ display: 'block', fontWeight: 'bold', fontSize: '13px', marginBottom: '5px' }}>Full name (First and Last name)</label>
-                        <input
-                            required style={{ width: '100%', padding: '8px', border: '1px solid #d5d9d9', borderRadius: '4px' }}
-                            value={address.fullName} onChange={(e) => setAddress({ ...address, fullName: e.target.value })}
-                        />
-                    </div>
+                <form onSubmit={handleContinue} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>RECIPIENT NAME</label>
+                    <input
+                        required style={inputStyle}
+                        value={address.fullName} onChange={(e) => setAddress({ ...address, fullName: e.target.value })}
+                    />
+
                     <div style={{ display: 'flex', gap: '20px' }}>
                         <div style={{ flex: 1 }}>
-                            <label style={{ display: 'block', fontWeight: 'bold', fontSize: '13px', marginBottom: '5px' }}>Mobile number</label>
-                            <input required style={{ width: '100%', padding: '8px', border: '1px solid #d5d9d9', borderRadius: '4px' }} />
+                            <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>PHONE</label>
+                            <input required style={inputStyle} />
                         </div>
                         <div style={{ flex: 1 }}>
-                            <label style={{ display: 'block', fontWeight: 'bold', fontSize: '13px', marginBottom: '5px' }}>Pincode</label>
-                            <input required style={{ width: '100%', padding: '8px', border: '1px solid #d5d9d9', borderRadius: '4px' }} />
-                        </div>
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', fontWeight: 'bold', fontSize: '13px', marginBottom: '5px' }}>Flat, House no., Building, Company, Apartment</label>
-                        <input required style={{ width: '100%', padding: '8px', border: '1px solid #d5d9d9', borderRadius: '4px' }} />
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', fontWeight: 'bold', fontSize: '13px', marginBottom: '5px' }}>Area, Colony, Street, Sector, Village</label>
-                        <input required style={{ width: '100%', padding: '8px', border: '1px solid #d5d9d9', borderRadius: '4px' }} />
-                    </div>
-                    <div style={{ display: 'flex', gap: '20px' }}>
-                        <div style={{ flex: 1 }}>
-                            <label style={{ display: 'block', fontWeight: 'bold', fontSize: '13px', marginBottom: '5px' }}>Town/City</label>
-                            <input required style={{ width: '100%', padding: '8px', border: '1px solid #d5d9d9', borderRadius: '4px' }} />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <label style={{ display: 'block', fontWeight: 'bold', fontSize: '13px', marginBottom: '5px' }}>State</label>
-                            <input required style={{ width: '100%', padding: '8px', border: '1px solid #d5d9d9', borderRadius: '4px' }} />
+                            <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>PINCODE</label>
+                            <input required style={inputStyle} />
                         </div>
                     </div>
 
-                    <button type="submit" className="btn-primary" style={{ marginTop: '20px', padding: '12px' }}>
-                        Use this address and continue to Payment
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>FLAT / RESIDENCE</label>
+                    <input required style={inputStyle} />
+
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>AREA / LANDMARK</label>
+                    <input required style={inputStyle} />
+
+                    <div style={{ display: 'flex', gap: '20px' }}>
+                        <div style={{ flex: 1 }}>
+                            <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>CITY</label>
+                            <input required style={inputStyle} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>STATE / PROVINCE</label>
+                            <input required style={inputStyle} />
+                        </div>
+                    </div>
+
+                    <button type="submit" className="btn-primary" style={{ marginTop: '20px', height: '55px' }}>
+                        CONTINUE TO SECURE PAYMENT
                     </button>
                 </form>
             </motion.div>

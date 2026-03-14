@@ -32,13 +32,21 @@ function App() {
         </Routes>
       </main>
 
-      <footer style={{ textAlign: 'center', padding: '40px 0', backgroundColor: 'var(--nav-bg)', color: 'white', borderTop: '1px solid #333' }}>
-        <div className="container" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center', gap: '30px', fontSize: '14px' }}>
-          <span style={{ cursor: 'pointer', color: '#ccc' }}>Conditions of Use</span>
-          <span style={{ cursor: 'pointer', color: '#ccc' }}>Privacy Notice</span>
-          <span style={{ cursor: 'pointer', color: '#ccc' }}>Help</span>
+      <footer style={{
+        textAlign: 'center',
+        padding: '60px 0',
+        background: 'rgba(255,255,255,0.02)',
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        marginTop: '60px'
+      }}>
+        <div className="container" style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center', gap: '40px', fontSize: '13px', fontWeight: '600', letterSpacing: '1px' }}>
+          <span style={{ cursor: 'pointer', color: 'var(--text-muted)' }}>SERVICE TERMS</span>
+          <span style={{ cursor: 'pointer', color: 'var(--text-muted)' }}>PRIVACY VAULT</span>
+          <span style={{ cursor: 'pointer', color: 'var(--text-muted)' }}>SUPPORT</span>
         </div>
-        <p style={{ margin: 0, fontSize: '13px', color: '#999' }}>&copy; 2024-2026 Shopkart.com, Inc. or its affiliates</p>
+        <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.2)', fontWeight: '800', letterSpacing: '2px' }}>
+          &copy; 2024-2026 SHOPKART MAIN_NET. ALL RIGHTS RESERVED.
+        </p>
       </footer>
     </div>
   );
