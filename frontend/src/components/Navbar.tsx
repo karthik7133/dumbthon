@@ -91,10 +91,10 @@ const Navbar: React.FC = () => {
                         )}
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
+                    <Link to="/orders" style={{ textDecoration: 'none', color: 'white', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
                         <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>HISTORY,</span>
                         <span style={{ fontSize: '14px', fontWeight: '700' }}>ORDERS</span>
-                    </div>
+                    </Link>
 
                     {/* Cart with Glow */}
                     <Link to="/cart" style={{ textDecoration: 'none', color: 'white', position: 'relative' }}>

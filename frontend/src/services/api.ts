@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api'
+    baseURL: 'https://karthik7133-shopkart.hf.space/api'
 });
 
 export const faceUnlock = (faceDescriptor: number[]) => api.post('/auth/unlock', { faceDescriptor });
@@ -15,4 +15,8 @@ export const requestTrade = (tradeData: any) => api.post('/trades/request', trad
 export const getTrades = (userId: string) => api.get(`/trades?userId=${userId}`);
 export const updateTradeStatus = (id: string, status: string) => api.put(`/trades/${id}`, { status });
 
+export const placeOrder = (orderData: any) => api.post('/orders', orderData);
+export const getOrders = (userId: string) => api.get(`/orders/${userId}`);
+
 export default api;
+

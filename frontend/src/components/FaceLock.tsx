@@ -65,7 +65,7 @@ const FaceLock: React.FC<FaceLockProps> = ({ onUnlock }) => {
                     setStatus('Ready for Face Login');
                     return;
                 }
-                const res = await registerFace(name, descriptor);
+                const res = await registerFace(name, '', '', descriptor);
                 onUnlock(res.data.user);
             } else {
                 try {

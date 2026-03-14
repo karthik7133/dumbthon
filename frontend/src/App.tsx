@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -9,6 +9,7 @@ import Cart from './pages/Cart';
 import Address from './pages/Address';
 import Payment from './pages/Payment';
 import Success from './pages/Success';
+import Orders from './pages/Orders';
 
 function App() {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ function App() {
           <Route path="/address" element={user ? <Address /> : <Navigate to="/login" />} />
           <Route path="/payment" element={user ? <Payment /> : <Navigate to="/login" />} />
           <Route path="/success" element={user ? <Success /> : <Navigate to="/login" />} />
+          <Route path="/orders" element={user ? <Orders /> : <Navigate to="/login" />} />
         </Routes>
       </main>
 

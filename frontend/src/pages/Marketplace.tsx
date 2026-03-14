@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getItems } from '../services/api';
 import RunningCartButton from '../components/RunningCartButton';
 import { useCart } from '../context/CartContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface MarketplaceProps {
     user: any;

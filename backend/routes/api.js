@@ -3,6 +3,7 @@ const router = express.Router();
 const itemController = require('../controllers/itemController');
 const tradeController = require('../controllers/tradeController');
 const authController = require('../controllers/authController');
+const orderController = require('../controllers/orderController');
 
 // Items
 router.post('/items/create', itemController.createItem);
@@ -19,4 +20,9 @@ router.put('/trades/:id', tradeController.updateTradeStatus);
 router.post('/auth/unlock', authController.faceUnlock);
 router.post('/auth/register', authController.registerFace);
 
+// Orders
+router.post('/orders', orderController.placeOrder);
+router.get('/orders/:userId', orderController.getOrders);
+
 module.exports = router;
+
