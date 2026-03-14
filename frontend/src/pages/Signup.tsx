@@ -26,16 +26,19 @@ const Signup: React.FC = () => {
     /* ─── Load models on mount ─── */
     useEffect(() => {
         const load = async () => {
+            console.log('[Face API Signup] Starting to load models from /face-models/ ...');
             setScanStatus('loading_models');
             try {
                 await Promise.all([
-                    faceapi.nets.tinyFaceDetector.loadFromUri('/face-models'),
-                    faceapi.nets.faceLandmark68Net.loadFromUri('/face-models'),
-                    faceapi.nets.faceRecognitionNet.loadFromUri('/face-models'),
+                    faceapi.nets.tinyFaceDetector.loadFromUri('/face-models/'),
+                    faceapi.nets.faceLandmark68Net.loadFromUri('/face-models/'),
+                    faceapi.nets.faceRecognitionNet.loadFromUri('/face-models/'),
                 ]);
+                console.log('[Face API Signup] Models loaded successfully!');
                 setModelsLoaded(true);
                 setScanStatus('idle');
-            } catch {
+            } catch (err) {
+                console.error('[Face API Signup] Error loading models:', err);
                 setError('NEURAL CORES UNAVAILABLE. PLEASE REFRESH.');
                 setScanStatus('error');
             }

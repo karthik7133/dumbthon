@@ -33,15 +33,18 @@ const Login: React.FC = () => {
     /* ─── Load face-api models ─── */
     useEffect(() => {
         const load = async () => {
+            console.log('[Face API] Starting to load models from /face-models/ ...');
             try {
                 await Promise.all([
-                    faceapi.nets.tinyFaceDetector.loadFromUri('/face-models'),
-                    faceapi.nets.faceLandmark68Net.loadFromUri('/face-models'),
-                    faceapi.nets.faceRecognitionNet.loadFromUri('/face-models'),
+                    faceapi.nets.tinyFaceDetector.loadFromUri('/face-models/'),
+                    faceapi.nets.faceLandmark68Net.loadFromUri('/face-models/'),
+                    faceapi.nets.faceRecognitionNet.loadFromUri('/face-models/'),
                 ]);
+                console.log('[Face API] Models loaded successfully!');
                 setModelsLoaded(true);
                 startCamera();
-            } catch {
+            } catch (err) {
+                console.error('[Face API] Error loading models:', err);
                 setStatus('error');
                 setError('NEURAL CORES FAILED TO LOAD. REFRESH AND TRY AGAIN.');
             }
@@ -191,136 +194,138 @@ const Login: React.FC = () => {
                 </div>
 
                 <AnimatePresence mode="wait">
-                    {status === 'loading' ? (
-                        <motion.div
-                            key="loading"
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            style={{ textAlign: 'center', padding: '60px 0' }}
-                        >
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
+                    <motion.div key="camera" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        {/* Camera Feed */}
+                        <div style={{
+                            position: 'relative', width: '100%', borderRadius: '16px', overflow: 'hidden',
+                            border: '1px solid rgba(255,140,0,0.2)', background: '#0a0a0d',
+                            aspectRatio: '4/3', marginBottom: '24px',
+                            boxShadow: '0 0 0 4px rgba(255,140,0,0.04), 0 20px 60px rgba(0,0,0,0.5)',
+                        }}>
+                            <video
+                                ref={videoRef}
+                                autoPlay muted playsInline
                                 style={{
-                                    width: '48px', height: '48px', margin: '0 auto 20px',
-                                    border: '2px solid rgba(255,255,255,0.06)',
-                                    borderTopColor: 'var(--primary)', borderRadius: '50%',
-                                    boxShadow: '0 0 20px rgba(255,140,0,0.2)'
+                                    width: '100%', height: '100%', objectFit: 'cover',
+                                    transform: 'scaleX(-1)', display: 'block',
+                                    opacity: status === 'loading' ? 0 : 1,
+                                    transition: 'opacity 0.4s ease'
                                 }}
                             />
-                            <div style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: '700', letterSpacing: '2px' }}>
-                                LOADING NEURAL CORES...
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <motion.div key="camera" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                            {/* Camera Feed */}
-                            <div style={{
-                                position: 'relative', width: '100%', borderRadius: '16px', overflow: 'hidden',
-                                border: '1px solid rgba(255,140,0,0.2)', background: '#0a0a0d',
-                                aspectRatio: '4/3', marginBottom: '24px',
-                                boxShadow: '0 0 0 4px rgba(255,140,0,0.04), 0 20px 60px rgba(0,0,0,0.5)',
-                            }}>
-                                <video
-                                    ref={videoRef}
-                                    autoPlay muted playsInline
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)', display: 'block' }}
-                                />
 
-                                {/* Face detection canvas overlay */}
-                                <canvas
-                                    ref={canvasRef}
-                                    style={{
-                                        position: 'absolute', inset: 0, pointerEvents: 'none',
-                                        transform: 'scaleX(-1)', width: '100%', height: '100%'
-                                    }}
-                                />
+                            {/* Face detection canvas overlay */}
+                            <canvas
+                                ref={canvasRef}
+                                style={{
+                                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                                    transform: 'scaleX(-1)', width: '100%', height: '100%'
+                                }}
+                            />
 
-                                {/* Scan line animation */}
-                                {status === 'scanning' && (
+                            {/* Loading Overlay */}
+                            {status === 'loading' && (
+                                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0a0a0d', zIndex: 20 }}>
                                     <motion.div
-                                        animate={{ top: ['0%', '100%'] }}
-                                        transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                                        animate={{ rotate: 360 }}
+                                        transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
                                         style={{
-                                            position: 'absolute', left: 0, right: 0, height: '2px',
-                                            background: 'linear-gradient(to right, transparent 0%, var(--primary) 50%, transparent 100%)',
-                                            boxShadow: '0 0 20px var(--primary)', zIndex: 10,
+                                            width: '48px', height: '48px', margin: '0 auto 20px',
+                                            border: '2px solid rgba(255,255,255,0.06)',
+                                            borderTopColor: 'var(--primary)', borderRadius: '50%',
+                                            boxShadow: '0 0 20px rgba(255,140,0,0.2)'
                                         }}
                                     />
-                                )}
-
-                                {/* HUD overlay — corner brackets */}
-                                {['tl', 'tr', 'bl', 'br'].map(corner => (
-                                    <div key={corner} style={{
-                                        position: 'absolute',
-                                        width: '20px', height: '20px',
-                                        borderColor: 'rgba(255,140,0,0.5)',
-                                        borderStyle: 'solid',
-                                        borderWidth: corner.includes('t') ? '2px 0 0' : '0 0 2px',
-                                        borderRightWidth: corner.includes('r') ? '2px' : '0',
-                                        borderLeftWidth: corner.includes('l') ? '2px' : '0',
-                                        top: corner.includes('t') ? '12px' : 'auto',
-                                        bottom: corner.includes('b') ? '12px' : 'auto',
-                                        left: corner.includes('l') ? '12px' : 'auto',
-                                        right: corner.includes('r') ? '12px' : 'auto',
-                                    }} />
-                                ))}
-
-                                {/* Status bar */}
-                                <div style={{
-                                    position: 'absolute', bottom: 0, left: 0, right: 0,
-                                    padding: '10px 16px',
-                                    background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
-                                    display: 'flex', alignItems: 'center', gap: '8px'
-                                }}>
-                                    <span className={`status-dot ${cfg.dotClass}`} />
-                                    <span style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1.5px', color: cfg.color }}>
-                                        {cfg.label}
-                                    </span>
+                                    <div style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: '700', letterSpacing: '2px' }}>
+                                        LOADING NEURAL CORES...
+                                    </div>
                                 </div>
+                            )}
+
+                            {/* Scan line animation */}
+                            {status === 'scanning' && (
+                                <motion.div
+                                    animate={{ top: ['0%', '100%'] }}
+                                    transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                                    style={{
+                                        position: 'absolute', left: 0, right: 0, height: '2px',
+                                        background: 'linear-gradient(to right, transparent 0%, var(--primary) 50%, transparent 100%)',
+                                        boxShadow: '0 0 20px var(--primary)', zIndex: 10,
+                                    }}
+                                />
+                            )}
+
+                            {/* HUD overlay — corner brackets */}
+                            {['tl', 'tr', 'bl', 'br'].map(corner => (
+                                <div key={corner} style={{
+                                    position: 'absolute',
+                                    width: '20px', height: '20px',
+                                    borderColor: 'rgba(255,140,0,0.5)',
+                                    borderStyle: 'solid',
+                                    borderWidth: corner.includes('t') ? '2px 0 0' : '0 0 2px',
+                                    borderRightWidth: corner.includes('r') ? '2px' : '0',
+                                    borderLeftWidth: corner.includes('l') ? '2px' : '0',
+                                    top: corner.includes('t') ? '12px' : 'auto',
+                                    bottom: corner.includes('b') ? '12px' : 'auto',
+                                    left: corner.includes('l') ? '12px' : 'auto',
+                                    right: corner.includes('r') ? '12px' : 'auto',
+                                }} />
+                            ))}
+
+                            {/* Status bar */}
+                            <div style={{
+                                position: 'absolute', bottom: 0, left: 0, right: 0,
+                                padding: '10px 16px',
+                                background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
+                                display: 'flex', alignItems: 'center', gap: '8px'
+                            }}>
+                                <span className={`status-dot ${cfg.dotClass}`} />
+                                <span style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1.5px', color: cfg.color }}>
+                                    {cfg.label}
+                                </span>
                             </div>
+                        </div>
 
-                            {/* Error */}
-                            <AnimatePresence>
-                                {error && (
-                                    <motion.div
-                                        key="err"
-                                        initial={{ opacity: 0, y: -8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -8 }}
-                                        className="alert-error"
-                                        style={{ marginBottom: '20px' }}
-                                    >
-                                        <span>⚠</span>
-                                        <span style={{ fontSize: '12px', letterSpacing: '0.3px' }}>{error}</span>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                        {/* Error */}
+                        <AnimatePresence>
+                            {error && (
+                                <motion.div
+                                    key="err"
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8 }}
+                                    className="alert-error"
+                                    style={{ marginBottom: '20px' }}
+                                >
+                                    <span>⚠</span>
+                                    <span style={{ fontSize: '12px', letterSpacing: '0.3px' }}>{error}</span>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
-                            {/* Scan Button */}
-                            <button
-                                className="btn-primary"
-                                onClick={handleScan}
-                                disabled={status === 'scanning' || status === 'success' || status === 'cam_error'}
-                                style={{ width: '100%', height: '56px', fontSize: '13px', letterSpacing: '2px' }}
-                            >
-                                {status === 'scanning' ? (
-                                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                                        <motion.span
-                                            animate={{ rotate: 360 }}
-                                            transition={{ repeat: Infinity, duration: 0.8, ease: 'linear' }}
-                                            style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%' }}
-                                        />
-                                        SCANNING...
-                                    </span>
-                                ) : status === 'success' ? '✓ AUTHENTICATED' : '⚡ RUN BIOMETRIC SCAN'}
-                            </button>
+                        {/* Scan Button */}
+                        <button
+                            className="btn-primary"
+                            onClick={handleScan}
+                            disabled={status === 'scanning' || status === 'success' || status === 'cam_error'}
+                            style={{ width: '100%', height: '56px', fontSize: '13px', letterSpacing: '2px' }}
+                        >
+                            {status === 'scanning' ? (
+                                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                                    <motion.span
+                                        animate={{ rotate: 360 }}
+                                        transition={{ repeat: Infinity, duration: 0.8, ease: 'linear' }}
+                                        style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%' }}
+                                    />
+                                    SCANNING...
+                                </span>
+                            ) : status === 'success' ? '✓ AUTHENTICATED' : '⚡ RUN BIOMETRIC SCAN'}
+                        </button>
 
-                            {/* Tip */}
-                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '14px', lineHeight: 1.5 }}>
-                                Ensure your face is fully visible & well-lit for best results
-                            </p>
-                        </motion.div>
-                    )}
+                        {/* Tip */}
+                        <p style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '14px', lineHeight: 1.5 }}>
+                            Ensure your face is fully visible & well-lit for best results
+                        </p>
+                    </motion.div>
                 </AnimatePresence>
 
                 {/* Divider */}

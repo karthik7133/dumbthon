@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://karthik7133-shopkart.hf.space/api'
+    baseURL: 'https://dumbthon2-0.onrender.com/api'
 });
 
 export const faceUnlock = (faceDescriptor: number[]) => api.post('/auth/unlock', { faceDescriptor });
