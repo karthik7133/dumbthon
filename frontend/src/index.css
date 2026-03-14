@@ -109,43 +109,59 @@ body::before {
 }
 
 /* Typography Gradient */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* Typography Gradient */
 .text-gradient {
     background: linear-gradient(45deg, #FF8C00, #FFD700);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-/* Keyframes for Background Blob Movement */
-@keyframes morph {
+/* Floating Particles (Bubbles/Stars) */
+.particle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.1;
+    animation: float-around 20s linear infinite;
+}
+
+@keyframes float-around {
     0% {
-        border-radius: 40% 60% 60% 40% / 70% 30% 70% 30%;
+        transform: translateY(105vh) rotate(0deg) scale(1);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.2;
+    }
+
+    80% {
+        opacity: 0.2;
     }
 
     100% {
-        border-radius: 40% 60% 70% 30% / 40% 40% 60% 60%;
+        transform: translateY(-10vh) rotate(360deg) scale(1.5);
+        opacity: 0;
     }
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-color);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--surface);
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
+.star {
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    background: var(--accent);
 }

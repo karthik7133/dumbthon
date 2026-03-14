@@ -67,8 +67,31 @@ const Marketplace: React.FC<MarketplaceProps> = ({ user }) => {
         { size: '300px', bg: 'rgba(255, 215, 0, 0.05)', bottom: '10%', left: '20%', duration: 20 },
     ];
 
+    const BackgroundParticles = () => {
+        const particles = Array.from({ length: 15 });
+        return (
+            <div className="particle-container">
+                {particles.map((_, i) => (
+                    <div
+                        key={i}
+                        className={`particle ${i % 3 === 0 ? 'star' : ''}`}
+                        style={{
+                            width: `${Math.random() * 8 + 4}px`,
+                            height: `${Math.random() * 8 + 4}px`,
+                            left: `${Math.random() * 100}%`,
+                            animationDuration: `${Math.random() * 10 + 15}s`,
+                            animationDelay: `${Math.random() * 10}s`,
+                            opacity: Math.random() * 0.15 + 0.05
+                        }}
+                    />
+                ))}
+            </div>
+        );
+    };
+
     return (
         <div style={{ position: 'relative', overflow: 'hidden' }}>
+            <BackgroundParticles />
             {/* Background Blobs */}
             {blobs.map((blob, i) => (
                 <motion.div

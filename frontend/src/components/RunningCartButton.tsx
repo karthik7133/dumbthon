@@ -13,23 +13,24 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
 
     // Annoy for 2-3 attempts as requested
     const targetDodges = useRef(Math.floor(Math.random() * 2) + 2);
+    const lastDodgeTime = useRef(0);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     const funnyMessages = [
-        "NICE TRY! 😉",
-        "TOO SLOW. 💨",
-        "MISSING OUT? 😂",
-        "NOT FOR YOU. 🔒",
-        "KEEP CHASING. 🏃‍♂️",
-        "ALMOST THERE. ✨"
+        "WARP SPEED! 🛸",
+        "WHERE DID I GO? 🕵️‍♂️",
+        "TOO SLOW! 💨",
+        "CATCH THE GLITCH! 👾",
+        "HUGE LEAP! 🚀",
+        "CHAOS MODE ACTIVE! 🧬"
     ];
 
     useEffect(() => {
         if (dodgeCount > 0 && dodgeCount < targetDodges.current) {
             setBannerText(funnyMessages[Math.floor(Math.random() * funnyMessages.length)]);
-            const timer = setTimeout(() => setBannerText(""), 1200);
+            const timer = setTimeout(() => setBannerText(""), 800);
             return () => clearTimeout(timer);
-        } else if (dodgeCount >= targetDodges.current) {
+        } else if (dodgeCount >= targetDodges.current && !isTrapped) {
             setBannerText("ACCESS GRANTED! 🔓");
             setIsTrapped(true);
             setPosition({ x: 0, y: 0 });
@@ -41,6 +42,9 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
     const handleMouseMove = (e: React.MouseEvent) => {
         if (!buttonRef.current || isTrapped) return;
 
+        const now = Date.now();
+        if (now - lastDodgeTime.current < 100) return; // Chaos-level cooldown: 100ms
+
         const rect = buttonRef.current.getBoundingClientRect();
         const buttonCenterX = rect.left + rect.width / 2;
         const buttonCenterY = rect.top + rect.height / 2;
@@ -50,17 +54,22 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
             Math.pow(e.clientY - buttonCenterY, 2)
         );
 
-        if (distance < 90) {
+        // Increased reaction distance: 150px
+        if (distance < 150) {
+            lastDodgeTime.current = now;
             const angle = Math.atan2(buttonCenterY - e.clientY, buttonCenterX - e.clientX);
-            const moveDist = 60 + Math.random() * 80;
+
+            // MASSIVE movement distance: 300-600px
+            const moveDist = 300 + Math.random() * 300;
 
             let newX = position.x + Math.cos(angle) * moveDist;
             let newY = position.y + Math.sin(angle) * moveDist;
 
-            // Contain within its parent
-            const bound = 120;
-            newX = Math.max(-bound, Math.min(bound, newX));
-            newY = Math.max(-bound, Math.min(bound, newY));
+            // Contain within huge bounds to allow screen-wide jumps
+            const boundVertical = 400;
+            const boundHorizontal = 500;
+            newX = Math.max(-boundHorizontal, Math.min(boundHorizontal, newX));
+            newY = Math.max(-boundVertical, Math.min(boundVertical, newY));
 
             setPosition({ x: newX, y: newY });
             setDodgeCount(prev => prev + 1);
@@ -78,17 +87,17 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
                         style={{
                             position: 'absolute',
                             zIndex: 100,
-                            background: 'rgba(255, 140, 0, 0.9)',
+                            background: 'rgba(255, 140, 0, 0.95)',
                             backdropFilter: 'blur(5px)',
                             color: 'white',
-                            padding: '8px 16px',
-                            borderRadius: '12px',
+                            padding: '6px 14px',
+                            borderRadius: '10px',
                             fontSize: '11px',
                             fontWeight: '800',
                             whiteSpace: 'nowrap',
-                            boxShadow: '0 10px 20px rgba(0,0,0,0.3)',
+                            boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
                             pointerEvents: 'none',
-                            letterSpacing: '1px',
+                            letterSpacing: '0.5px',
                             border: '1px solid rgba(255,255,255,0.2)'
                         }}
                     >
@@ -111,18 +120,20 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px'
+                    gap: '8px',
+                    cursor: isTrapped ? 'pointer' : 'default'
                 }}
                 animate={{
                     x: position.x,
                     y: position.y,
                     scale: isTrapped ? [1, 1.05, 1] : 1,
-                    borderColor: isTrapped ? '#00ff00' : 'rgba(255,255,255,0.1)'
+                    borderColor: isTrapped ? '#00ff00' : 'rgba(255,255,255,0.1)',
+                    boxShadow: isTrapped ? '0 0 20px rgba(0,255,0,0.2)' : '0 4px 15px rgba(0,0,0,0.3)'
                 }}
                 transition={{
                     type: 'spring',
-                    stiffness: 600,
-                    damping: 35,
+                    stiffness: 1000, // Insane stiffness for instant teleport
+                    damping: 25,
                     scale: { duration: 0.2 }
                 }}
                 onMouseMove={handleMouseMove}
@@ -130,17 +141,18 @@ const RunningCartButton: React.FC<RunningCartButtonProps> = ({ onAdd }) => {
                     if (isTrapped) {
                         onAdd();
                     } else {
+                        // Incremental dodge count if they somehow manage to click it
                         setDodgeCount(prev => prev + 1);
                     }
                 }}
             >
                 {isTrapped ? (
                     <>
-                        <span style={{ fontSize: '18px' }}>✨</span>
-                        ACQUIRE NOW
+                        <span style={{ fontSize: '18px' }}>🛒</span>
+                        ADD TO CART
                     </>
                 ) : (
-                    "ADD TO SELECTION"
+                    "GET THIS ITEM"
                 )}
             </motion.button>
         </div>
